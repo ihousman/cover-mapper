@@ -70,14 +70,14 @@
         const renderer = {
           type: "simple",
           field: "Tree",
-          symbol: {
-            type: "simple-marker",
-            color: "orange",
+          // symbol: {
+          //   type: "simple-marker",
+          //   color: "orange",
 
-            outline: {
-              color: "white"
-            }
-          },
+          //   outline: {
+          //     color: "white"
+          //   }
+          // },
           visualVariables: [
             {
               type: "size",
@@ -97,7 +97,7 @@
         };
 
         const geojsonLayer = new GeoJSONLayer({
-          url: "js/canopy.geojson",
+          url: "./js/canopy.geojson",
           title:'Canopy Features',
           opacity:0.3,
           popupTemplate: template,
@@ -227,14 +227,19 @@ map.layers.add(geojsonLayer);
       addLayer = function(eeImage,vizParams,name,visible){
           if(visible === undefined || visible === null){visible = true};
           if(name === undefined || name === null){name = 'Layer '+ layerNumber.toString()};
+          if(!vizParams.opacity){vizParams.opacity = 1};
+          var actualOpacity = vizParams.opacity;
+          vizParams.opacity = 1;
           var m = eeImage.getMap(vizParams);
           var url = "https://earthengine.googleapis.com/map/"+m.mapid+"/{level}/{col}/{row}?token="+m.token;
+          console.log(name);console.log(url);
           var urlThumb = "https://earthengine.googleapis.com/map/"+m.mapid+"/10/177/409?token="+m.token + ".png"
           var eeBaseLayer = new WebTileLayer({
                           urlTemplate: url,
                           id: name,
                           title:name,
-                          visible: visible
+                          visible: visible,
+                          opacity: actualOpacity  
                           });
           // Create a Basemap with the WebTileLayer. The thumbnailUrl will be used for
           // the image in the BasemapToggle widget.
@@ -256,6 +261,9 @@ map.layers.add(geojsonLayer);
       function runGEE(){
        var c = ee.ImageCollection('users/Shree1175/CODA_Canopy/FinalCollection').mosaic();
        addLayer(c,{min:1,max:1,palette:'0F0',opacity:0.5},'Canopy Image')
+       // var tcc = ee.Image('USGS/NLCD/NLCD2011').select([2]);
+        // tcc = tcc.updateMask(tcc.gt(10))
+        // addLayer(tcc,{min:10,max:100,palette:'000,888,0F0',opacity:0.5},'tcc');
      view.when(function() {
 
 
