@@ -70,14 +70,14 @@
         const renderer = {
           type: "simple",
           field: "Tree",
-          // symbol: {
-          //   type: "simple-marker",
-          //   color: "orange",
+          symbol: {
+            type: "simple-marker",
+            color: "orange",
 
-          //   outline: {
-          //     color: "white"
-          //   }
-          // },
+            outline: {
+              color: "white"
+            }
+          },
           visualVariables: [
             {
               type: "size",
@@ -99,7 +99,7 @@
         const geojsonLayer = new GeoJSONLayer({
           url: "./js/canopy.geojson",
           title:'Canopy Features',
-          opacity:0.3,
+          opacity:0.4,
           popupTemplate: template,
           renderer: renderer //optional
         });
@@ -260,7 +260,7 @@ map.layers.add(geojsonLayer);
       ////////////////////////////////////////////////////////////
       function runGEE(){
        var c = ee.ImageCollection('users/Shree1175/CODA_Canopy/FinalCollection').mosaic();
-       addLayer(c,{min:1,max:1,palette:'0F0',opacity:0.5},'Canopy Image')
+       addLayer(c,{min:1,max:1,palette:'0F0',opacity:0.7},'Canopy Image')
        // var tcc = ee.Image('USGS/NLCD/NLCD2011').select([2]);
         // tcc = tcc.updateMask(tcc.gt(10))
         // addLayer(tcc,{min:10,max:100,palette:'000,888,0F0',opacity:0.5},'tcc');
