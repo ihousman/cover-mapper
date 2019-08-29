@@ -63,8 +63,42 @@
 
         const template = {
           title: "{name}",
-          content: "Non Tree {nt}%  Tree {t}%",
-          format:{places:1}
+          content: [{
+            // It is also possible to set the fieldInfos outside of the content
+            // directly in the popupTemplate. If no fieldInfos is specifically set
+            // in the content, it defaults to whatever may be set within the popupTemplate.
+            type: "fields",
+            fieldInfos: [{
+              fieldName: "nonCanopy_pct",
+              label: "Non Tree %",
+              format: {
+                digitSeparator: true,
+                places: 1
+              }
+            },{
+              fieldName: "canopy_pct",
+              label: "Tree %",
+              format: {
+                digitSeparator: true,
+                places: 1
+              }},{
+              fieldName: "temperature_canopy_mean",
+              label: "Mean Tree Temperature",
+              format: {
+                digitSeparator: true,
+                places: 1
+              }}
+              ,{
+              fieldName: "temperature_nonCanopy_mean",
+              label: "Mean Non Tree Temperature",
+              format: {
+                digitSeparator: true,
+                places: 1
+              }}
+            ]}],
+
+          // "Non Tree: {nonCanopy_pct}% <br> Tree: {canopy_pct}%<br><br>Mean Tree Temperature: {temperature_canopy_mean}<br>Mean Tree Temperature: {temperature_nonCanopy_mean}",
+          
         };
 
         const renderer = {
@@ -81,7 +115,7 @@
           visualVariables: [
             {
               type: "size",
-              field: "t",
+              field: "canopy_pct",
               stops: [
                 {
                   value: 5,
@@ -95,9 +129,21 @@
             }
           ]
         };
+        
 
+        // var renderer = {
+        //   type: "simple",  // autocasts as new SimpleRenderer()
+        //   symbol: {
+        //     type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+        //     color: [ 255, 128, 0, 0.5 ],
+        //     outline: {  // autocasts as new SimpleLineSymbol()
+        //       width: 1,
+        //       color: "white"
+        //     }
+        //   }
+        // };
         const geojsonLayer = new GeoJSONLayer({
-          url: "./js/canopy.geojson",
+          url: "./js/test.geojson",
           title:'Canopy Features',
           opacity:0.4,
           popupTemplate: template,
@@ -259,8 +305,11 @@ map.layers.add(geojsonLayer);
 
       ////////////////////////////////////////////////////////////
       function runGEE(){
-       var c = ee.ImageCollection('users/Shree1175/CODA_Canopy/FinalCollection').mosaic();
-       addLayer(c,{min:1,max:1,palette:'0F0',opacity:0.7},'Canopy Image')
+      var stats = ee.FeatureCollection('projects/igde-work/CODA_UrbanCanopy/msas-canopy-cover-stats');
+       var c = ee.ImageCollection('users/Shree1175/CODA_Canopy/FinalCollection').mosaic(); 
+       var temps = ee.ImageCollection('projects/igde-work/CODA_UrbanCanopy/CODA-MSA-Temperatures').mosaic().clip(stats);
+       addLayer(temps,{min:290,max:310,palette:'00F,888,F00',opacity:0.7},'Median Summer Temperature',false);
+       addLayer(c,{min:1,max:1,palette:'0F0',opacity:0.7},'Canopy Image');
        // var tcc = ee.Image('USGS/NLCD/NLCD2011').select([2]);
         // tcc = tcc.updateMask(tcc.gt(10))
         // addLayer(tcc,{min:10,max:100,palette:'000,888,0F0',opacity:0.5},'tcc');
