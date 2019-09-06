@@ -14,7 +14,11 @@
     <div class='legend-scale'>
         <ul class='legend-labels'>
             <li><span style='background:#0F0;'></span>Tree</li>
-            
+            <br>
+            <li><span>Temperature</span></li>
+            <li><span style='background:linear-gradient(to right,#00F,#888,#F00);width:100%;'></span></li>
+            <li style = 'float:left'>290</li>
+            <li style = 'float:right'>310</li>
         </ul>
     </div>
     <div class='legend-source'><a href="#link to source"></a></div>
@@ -28,7 +32,7 @@
   <script src="https://js.arcgis.com/4.12"></script>
   <script type="text/javascript" src="js/ee_api_js.js"></script>
   <script>
-    var addLayer;var map;
+    var addLayer;var map;var view;
     var mapper = new Object();
     var layerNumber = 1;
     var layerList = [];
@@ -94,8 +98,48 @@
               format: {
                 digitSeparator: true,
                 places: 1
-              }}
-            ]}],
+              }},
+              
+            ]},{
+                // You can set a media element within the popup as well. This
+                // can be either an image or a chart. You specify this within
+                // the mediaInfos. The following creates a pie chart in addition
+                // to two separate images. The chart is also set up to work with
+                // related tables. Similar to text elements, media can only be set within the content.
+                type: "media", // MediaContentElement
+                mediaInfos: [
+                  {
+                    title: "<b>Temp Canopy Distribution</b>",
+                    type: "bar-chart",
+                    caption: "",
+                    value: {
+                      fields: ["temperature_canopy_p0", "temperature_canopy_p5", "temperature_canopy_p10", "temperature_canopy_p15", "temperature_canopy_p20", "temperature_canopy_p25", "temperature_canopy_p30", "temperature_canopy_p35", "temperature_canopy_p40", "temperature_canopy_p45", "temperature_canopy_p50", "temperature_canopy_p55", "temperature_canopy_p60", "temperature_canopy_p65", "temperature_canopy_p70", "temperature_canopy_p75", "temperature_canopy_p80", "temperature_canopy_p85", "temperature_canopy_p90", "temperature_canopy_p95", "temperature_canopy_p100"],
+                      
+                    }
+                  },
+                  {
+                    title: "<b>Temp Non Canopy Distribution</b>",
+                    type: "bar-chart",
+                    caption: "",
+                    value: {
+                      fields: ["temperature_nonCanopy_p0", "temperature_nonCanopy_p5", "temperature_nonCanopy_p10", "temperature_nonCanopy_p15", "temperature_nonCanopy_p20", "temperature_nonCanopy_p25", "temperature_nonCanopy_p30", "temperature_nonCanopy_p35", "temperature_nonCanopy_p40", "temperature_nonCanopy_p45", "temperature_nonCanopy_p50", "temperature_nonCanopy_p55", "temperature_nonCanopy_p60", "temperature_nonCanopy_p65", "temperature_nonCanopy_p70", "temperature_nonCanopy_p75", "temperature_nonCanopy_p80", "temperature_nonCanopy_p85", "temperature_nonCanopy_p90", "temperature_nonCanopy_p95", "temperature_nonCanopy_p100"],
+                      
+                    }
+                  },
+                  
+                  {
+                    title: "<b>Canopy Pct</b>",
+                    type: "pie-chart",
+                    caption: "",
+                    value: {
+                      fields: ["nonCanopy_pct","canopy_pct"],
+                      min:290,
+                      max:310
+                      
+                    }
+                  }
+                  ]}
+            ]
 
           // "Non Tree: {nonCanopy_pct}% <br> Tree: {canopy_pct}%<br><br>Mean Tree Temperature: {temperature_canopy_mean}<br>Mean Tree Temperature: {temperature_nonCanopy_mean}",
           
@@ -182,7 +226,7 @@
         });
 
       map = new Map({
-        basemap: 'satellite',
+        basemap: 'hybrid',
         ground: {
         layers: [ new ExaggeratedElevationLayer() ]
                 }
@@ -196,8 +240,10 @@ map.layers.add(geojsonLayer);
       //  console.log("Layer moved: ", event.moved);
       // });
       // var mapCenter = [-113.67,47.92]//FNF
-      var mapCenter = [-100,30]
-      var initCamera = {
+      var initCamera = JSON.parse(localStorage.coverMapperCamera);
+      if(initCamera === undefined || initCamera === null){
+        var mapCenter = [-100,30]
+        initCamera = {
         heading: 0,
         tilt:10,
         position: {
@@ -206,8 +252,10 @@ map.layers.add(geojsonLayer);
           z: 7000000
         }
       };
+      }
+      
 
-      var view = new SceneView({
+      view = new SceneView({
         container: "viewDiv",
         map: map,
         camera: initCamera
@@ -218,12 +266,13 @@ map.layers.add(geojsonLayer);
       //   center: mapCenter,
       //   zoom:9
       // });
+      view.watch("camera", function(newValue) {localStorage.coverMapperCamera = JSON.stringify(newValue)});
 
-        var ccWidget = new CoordinateConversion({
-          view: view
-        });
+      //   var ccWidget = new CoordinateConversion({
+      //     view: view
+      //   });
 
-      view.ui.add(ccWidget, "bottom-right");
+      // view.ui.add(ccWidget, "bottom-right");
 
       var scalebar = new ScaleBar({
       view: view
@@ -231,21 +280,21 @@ map.layers.add(geojsonLayer);
       view.ui.add(scalebar, "bottom-right");
 
 
-      var basemapGallery = new BasemapGallery({
-        view: view,
+      // var basemapGallery = new BasemapGallery({
+      //   view: view,
         
-      });
+      // });
 
-       var bmExpand = new Expand({
-        view: view,
-        content: basemapGallery,
-        id: 'Basemaps',
-        autoCollapse: true
-      });
+      //  var bmExpand = new Expand({
+      //   view: view,
+      //   content: basemapGallery,
+      //   id: 'Basemaps',
+      //   autoCollapse: true
+      // });
 
-      // Add the expand instance to the ui
+      // // Add the expand instance to the ui
 
-      view.ui.add(bmExpand, "top-right");
+      // view.ui.add(bmExpand, "top-right");
 
       // Instructions expand widget
                 const legend = document.getElementById("the-legend");

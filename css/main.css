@@ -11,14 +11,16 @@ html,
             margin-bottom: 5px;
             font-weight: bold;
             font-size: 90%;
+            width:100%;
         }
 
         .my-legend .legend-scale ul {
-            margin: 0;
+            margin: 5px;
             margin-bottom: 5px;
             padding: 0;
-            float: left;
+            float: center;
             list-style: none;
+            width:90%;
         }
 
             .my-legend .legend-scale ul li {
