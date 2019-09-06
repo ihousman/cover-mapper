@@ -284,21 +284,21 @@ map.layers.add(geojsonLayer);
       view.ui.add(scalebar, "bottom-right");
 
 
-      // var basemapGallery = new BasemapGallery({
-      //   view: view,
+      var basemapGallery = new BasemapGallery({
+        view: view,
         
-      // });
+      });
 
-      //  var bmExpand = new Expand({
-      //   view: view,
-      //   content: basemapGallery,
-      //   id: 'Basemaps',
-      //   autoCollapse: true
-      // });
+       var bmExpand = new Expand({
+        view: view,
+        content: basemapGallery,
+        id: 'Basemaps',
+        autoCollapse: true
+      });
 
-      // // Add the expand instance to the ui
+      // Add the expand instance to the ui
 
-      // view.ui.add(bmExpand, "top-right");
+      view.ui.add(bmExpand, "top-right");
 
       // Instructions expand widget
                 const legend = document.getElementById("the-legend");
