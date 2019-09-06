@@ -240,8 +240,9 @@ map.layers.add(geojsonLayer);
       //  console.log("Layer moved: ", event.moved);
       // });
       // var mapCenter = [-113.67,47.92]//FNF
-      var initCamera = JSON.parse(localStorage.coverMapperCamera);
-      if(initCamera === undefined || initCamera === null){
+
+      var initCamera;
+      if(localStorage.coverMapperCamera === undefined || localStorage.coverMapperCamera === null){
         var mapCenter = [-100,30]
         initCamera = {
         heading: 0,
@@ -252,6 +253,9 @@ map.layers.add(geojsonLayer);
           z: 7000000
         }
       };
+      }
+      else{
+        initCamera = JSON.parse(localStorage.coverMapperCamera);
       }
       
 
