@@ -1,9 +1,12 @@
-import ee,json
+import ee,json,numpy
 ee.Initialize()
 
 out =  'test.geojson'
 stats = ee.FeatureCollection('projects/igde-work/CODA_UrbanCanopy/msas-canopy-cover-stats');
 
+def zToP(z):
+	#From: https://goodcalculators.com/p-value-calculator/
+	return (1/numpy.sqrt(2*numpy.pi))*numpy.power(numpy.e,-numpy.power(z,2)/2)
 def fixer(f):
 	c = ee.Number(f.get('canopy_count'))
 	nc = ee.Number(f.get('nonCanopy_count'))
@@ -17,10 +20,11 @@ def fixer(f):
 	'nonCanopy_pct':ncPct,\
 	'nullCanopy_pct':nlPct})
 	return f.bounds()
+ps = map(lambda i:zToP(i),range(0,5))
+print(ps)
+# stats = stats.map(fixer)
+# stats = stats.getInfo()
 
-stats = stats.map(fixer)
-stats = stats.getInfo()
-
-o = open(out,'w')
-o.write(json.dumps(stats))
-o.close()
+# o = open(out,'w')
+# o.write(json.dumps(stats))
+# o.close()
