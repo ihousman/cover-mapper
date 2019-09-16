@@ -6,19 +6,31 @@
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
   <title>Urban Canopy</title>
 
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
+  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+
   <link rel="stylesheet" href="css/main.css">
  
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
 
-<div id='the-legend' class='my-legend' style='background: #222;width: 200px;border-radius: 3px;'>
+<div id='the-legend' class='my-legend' style='display:none;background: #222;width: 200px;border-radius: 3px;'>
     <div class='legend-title'>Class Key</div>
     <div class='legend-scale'>
-        <ul class='legend-labels'>
-            <li><span style='background:#0F0;'></span>Tree</li>
-            <br>
+        <ul class='legend-labels' id = 'the-legend-labels'>
+            <li><span style='background:#0F0;'></span>Canopy Image</li>
+           <!--  <br>
             <li><span>Temperature</span></li>
             <li><span style='background:linear-gradient(to right,#00F,#888,#F00);width:100%;'></span></li>
-            <li style = 'float:left'>290</li>
-            <li style = 'float:right'>310</li>
+            <li style = 'float:left'>10&#xb0 C</li>
+            <li style = 'float:right'>40&#xb0 C</li> -->
         </ul>
     </div>
     <div class='legend-source'><a href="#link to source"></a></div>
@@ -37,6 +49,7 @@
     var layerNumber = 1;
     var layerList = [];
     require([
+      "esri/widgets/Attribution",
       "esri/config",
       "esri/layers/GeoJSONLayer",
       "esri/layers/WebTileLayer",
@@ -53,7 +66,7 @@
       "esri/widgets/BasemapGallery",
       "esri/widgets/ScaleBar",
       "dojo/domReady!"
-    ], function(esriConfig, GeoJSONLayer, WebTileLayer, Map,
+    ], function(Attribution,esriConfig, GeoJSONLayer, WebTileLayer, Map,
       Basemap, SceneView,MapView,Expand,LayerList,Legend,CoordinateConversion,ElevationLayer,BaseElevationLayer,BasemapGallery,ScaleBar
     ) {
 
@@ -74,31 +87,47 @@
             type: "fields",
             fieldInfos: [{
               fieldName: "nonCanopy_pct",
-              label: "Non Tree %",
+              label: "Non Canopy %",
               format: {
                 digitSeparator: true,
                 places: 1
               }
             },{
               fieldName: "canopy_pct",
-              label: "Tree %",
-              format: {
-                digitSeparator: true,
-                places: 1
-              }},{
-              fieldName: "temperature_canopy_mean",
-              label: "Mean Tree Temperature",
+              label: "Canopy %",
               format: {
                 digitSeparator: true,
                 places: 1
               }}
               ,{
-              fieldName: "temperature_nonCanopy_mean",
-              label: "Mean Non Tree Temperature",
+              fieldName: "mean_temperature_nonCanopy",
+              label: "Mean Non Canopy Temperature (&#xb0 C)",
               format: {
                 digitSeparator: true,
                 places: 1
-              }},
+              }}
+              ,{
+              fieldName: "se_temperature_nonCanopy",
+              label: "Standard Error Non Canopy Temperature (&#xb0 C)",
+              format: {
+                digitSeparator: true,
+                places: 1
+              }}
+              ,{
+              fieldName: "mean_temperature_canopy",
+              label: "Mean Canopy Temperature (&#xb0 C)",
+              format: {
+                digitSeparator: true,
+                places: 1
+              }}
+              ,{
+              fieldName: "se_temperature_nonCanopy_canopy",
+              label: "Standard Error Canopy Temperature (&#xb0 C)",
+              format: {
+                digitSeparator: true,
+                places: 1
+              }}
+              
               
             ]},{
                 // You can set a media element within the popup as well. This
@@ -108,33 +137,43 @@
                 // related tables. Similar to text elements, media can only be set within the content.
                 type: "media", // MediaContentElement
                 mediaInfos: [
-                  {
-                    title: "<b>Temp Canopy Distribution</b>",
-                    type: "bar-chart",
+                  // {
+                  //   title: "<b>Temp Canopy Distribution</b>",
+                  //   type: "bar-chart",
+                  //   caption: "",
+                  //   value: {
+                  //     fields: ["temperature_canopy_p0", "temperature_canopy_p5", "temperature_canopy_p10", "temperature_canopy_p15", "temperature_canopy_p20", "temperature_canopy_p25", "temperature_canopy_p30", "temperature_canopy_p35", "temperature_canopy_p40", "temperature_canopy_p45", "temperature_canopy_p50", "temperature_canopy_p55", "temperature_canopy_p60", "temperature_canopy_p65", "temperature_canopy_p70", "temperature_canopy_p75", "temperature_canopy_p80", "temperature_canopy_p85", "temperature_canopy_p90", "temperature_canopy_p95", "temperature_canopy_p100"],
+                      
+                  //   }
+                  // },
+                  // {
+                  //   title: "<b>Temp Non Canopy Distribution</b>",
+                  //   type: "bar-chart",
+                  //   caption: "",
+                  //   value: {
+                  //     fields: ["temperature_nonCanopy_p0", "temperature_nonCanopy_p5", "temperature_nonCanopy_p10", "temperature_nonCanopy_p15", "temperature_nonCanopy_p20", "temperature_nonCanopy_p25", "temperature_nonCanopy_p30", "temperature_nonCanopy_p35", "temperature_nonCanopy_p40", "temperature_nonCanopy_p45", "temperature_nonCanopy_p50", "temperature_nonCanopy_p55", "temperature_nonCanopy_p60", "temperature_nonCanopy_p65", "temperature_nonCanopy_p70", "temperature_nonCanopy_p75", "temperature_nonCanopy_p80", "temperature_nonCanopy_p85", "temperature_nonCanopy_p90", "temperature_nonCanopy_p95", "temperature_nonCanopy_p100"],
+                      
+                  //   }
+                  // },
+                   {
+                    title: "<b>Temperature</b>",
+                    type: "column-chart",
                     caption: "",
                     value: {
-                      fields: ["temperature_canopy_p0", "temperature_canopy_p5", "temperature_canopy_p10", "temperature_canopy_p15", "temperature_canopy_p20", "temperature_canopy_p25", "temperature_canopy_p30", "temperature_canopy_p35", "temperature_canopy_p40", "temperature_canopy_p45", "temperature_canopy_p50", "temperature_canopy_p55", "temperature_canopy_p60", "temperature_canopy_p65", "temperature_canopy_p70", "temperature_canopy_p75", "temperature_canopy_p80", "temperature_canopy_p85", "temperature_canopy_p90", "temperature_canopy_p95", "temperature_canopy_p100"],
-                      
-                    }
+                      theme:"Julie",
+                      fields: ["mean_temperature_canopy","mean_temperature_nonCanopy"],
+                      },
+
                   },
                   {
-                    title: "<b>Temp Non Canopy Distribution</b>",
-                    type: "bar-chart",
-                    caption: "",
-                    value: {
-                      fields: ["temperature_nonCanopy_p0", "temperature_nonCanopy_p5", "temperature_nonCanopy_p10", "temperature_nonCanopy_p15", "temperature_nonCanopy_p20", "temperature_nonCanopy_p25", "temperature_nonCanopy_p30", "temperature_nonCanopy_p35", "temperature_nonCanopy_p40", "temperature_nonCanopy_p45", "temperature_nonCanopy_p50", "temperature_nonCanopy_p55", "temperature_nonCanopy_p60", "temperature_nonCanopy_p65", "temperature_nonCanopy_p70", "temperature_nonCanopy_p75", "temperature_nonCanopy_p80", "temperature_nonCanopy_p85", "temperature_nonCanopy_p90", "temperature_nonCanopy_p95", "temperature_nonCanopy_p100"],
-                      
-                    }
-                  },
-                  
-                  {
-                    title: "<b>Canopy Pct</b>",
+                    title: "<b>Canopy %</b>",
                     type: "pie-chart",
                     caption: "",
                     value: {
                       fields: ["nonCanopy_pct","canopy_pct"],
-                      min:290,
-                      max:310
+                      theme:"Julie"
+                     /* min:290,
+                      max:310*/
                       
                     }
                   }
@@ -145,49 +184,49 @@
           
         };
 
-        const renderer = {
-          type: "simple",
-          field: "Tree",
-          symbol: {
-            type: "simple-marker",
-            color: "orange",
-
-            outline: {
-              color: "white"
-            }
-          },
-          visualVariables: [
-            {
-              type: "size",
-              field: "canopy_pct",
-              stops: [
-                {
-                  value: 5,
-                  size: "2px"
-                },
-                {
-                  value: 20,
-                  size: "20px"
-                }
-              ]
-            }
-          ]
-        };
-        
-
-        // var renderer = {
-        //   type: "simple",  // autocasts as new SimpleRenderer()
+        // const renderer = {
+        //   type: "simple",
+        //   field: "Tree",
         //   symbol: {
-        //     type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-        //     color: [ 255, 128, 0, 0.5 ],
-        //     outline: {  // autocasts as new SimpleLineSymbol()
-        //       width: 1,
+        //     type: "simple-marker",
+        //     color: "orange",
+
+        //     outline: {
         //       color: "white"
         //     }
-        //   }
+        //   },
+        //   visualVariables: [
+        //     {
+        //       type: "size",
+        //       field: "canopy_pct",
+        //       stops: [
+        //         {
+        //           value: 5,
+        //           size: "2px"
+        //         },
+        //         {
+        //           value: 20,
+        //           size: "20px"
+        //         }
+        //       ]
+        //     }
+        //   ]
         // };
+        
+
+        var renderer = {
+          type: "simple",  // autocasts as new SimpleRenderer()
+          symbol: {
+            type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+            color: [ 255, 128, 0, 0 ],
+            outline: {  // autocasts as new SimpleLineSymbol()
+              width: 0,
+              color: "white"
+            }
+          }
+        };
         const geojsonLayer = new GeoJSONLayer({
-          url: "./js/test.geojson",
+          url: "./js/msa_cover_stats.geojson",
           title:'Canopy Features',
           opacity:0.4,
           popupTemplate: template,
@@ -277,7 +316,7 @@ map.layers.add(geojsonLayer);
       //   });
 
       // view.ui.add(ccWidget, "bottom-right");
-
+      view.ui.add('attribution','test');
       var scalebar = new ScaleBar({
       view: view
       });
@@ -302,6 +341,7 @@ map.layers.add(geojsonLayer);
 
       // Instructions expand widget
                 const legend = document.getElementById("the-legend");
+                $('#the-legend').show();
                 legendExpand = new Expand({
                     expandIconClass: "esri-icon-key",
                     expandTooltip: "Legend",
@@ -318,15 +358,25 @@ map.layers.add(geojsonLayer);
 
 
       console.log('initialized')
+      $('#spinner').hide();
       runGEE();
 
 
 
       })
       addLayer = function(eeImage,vizParams,name,visible){
+          if(vizParams.addRampToLegend === undefined || vizParams.addRampToLegend === null){vizParams.addRampToLegend = false};
           if(visible === undefined || visible === null){visible = true};
           if(name === undefined || name === null){name = 'Layer '+ layerNumber.toString()};
           if(!vizParams.opacity){vizParams.opacity = 1};
+          if(vizParams.addRampToLegend){
+            $('#the-legend-labels').append(`<br>
+            <li><span>Temperature</span></li>
+            <li><span style='background:linear-gradient(to right,#00F,#888,#F00);width:100%;'></span></li>
+            <li style = 'float:left'>10&#xb0 C</li>
+            <li style = 'float:right'>40&#xb0 C</li>`)
+          }
+         
           var actualOpacity = vizParams.opacity;
           vizParams.opacity = 1;
           var m = eeImage.getMap(vizParams);
@@ -358,11 +408,14 @@ map.layers.add(geojsonLayer);
 
       ////////////////////////////////////////////////////////////
       function runGEE(){
-      var stats = ee.FeatureCollection('projects/igde-work/CODA_UrbanCanopy/msas-canopy-cover-stats');
+      var msaStats = ee.FeatureCollection('projects/igde-work/CODA_UrbanCanopy/msas-canopy-cover-stats');
+      // var blockStats = ee.FeatureCollection('projects/igde-work/CODA_UrbanCanopy/blocks-z12-canopy-cover-stats');
+      // var tempI = blockStats.reduceToImage(['mean_temperature_canopy'], ee.Reducer.first())
+      // addLayer(tempI,{min:10,max:50,palette:'00F,888,F00'},'Block Canopy Mean Temp')
        var c = ee.ImageCollection('users/Shree1175/CODA_Canopy/FinalCollection').mosaic(); 
-       var temps = ee.ImageCollection('projects/igde-work/CODA_UrbanCanopy/CODA-MSA-Temperatures').mosaic().clip(stats);
-       addLayer(temps,{min:290,max:310,palette:'00F,888,F00',opacity:0.7},'Median Summer Temperature',false);
-       addLayer(c,{min:1,max:1,palette:'0F0',opacity:0.7},'Canopy Image');
+       var temps = ee.ImageCollection('projects/igde-work/CODA_UrbanCanopy/CODA-MSA-Temperatures').mosaic().clip(msaStats).subtract(273.15);
+       addLayer(temps,{min:15,max:50,palette:'00F,888,F00',opacity:0.7,addRampToLegend:true},'Median Summer Temperature',false);
+       addLayer(c,{min:1,max:1,palette:'0F0',opacity:0.9},'Canopy Image');
        // var tcc = ee.Image('USGS/NLCD/NLCD2011').select([2]);
         // tcc = tcc.updateMask(tcc.gt(10))
         // addLayer(tcc,{min:10,max:100,palette:'000,888,0F0',opacity:0.5},'tcc');
@@ -582,7 +635,11 @@ map.layers.add(geojsonLayer);
 </head>
 
 <body>
-  <div class="overlay"></div>
+  <div id = 'spinner'>
+  <img class = 'fa-spin'  src="./images/GEE_logo_transparent.png">
+  <img class = 'fa-spin'  src="./images/ESRI_Globe.png">
+  </div>
+
   <div id="viewDiv"></div>
 </body>
 

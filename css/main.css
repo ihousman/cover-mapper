@@ -1,6 +1,7 @@
 html,
     body,
     #viewDiv {
+        position:absolute;
       padding: 0;
       margin: 0;
       height: 100%;
@@ -38,7 +39,7 @@ html,
             width: 30px;
             margin-right: 5px;
             margin-left: 0;
-            border: 1px solid #999;
+            /*border: 1px solid #999;*/
         }
 
         .my-legend .legend-source {
@@ -53,11 +54,23 @@ html,
             border-radius: 10px;
         }
 
-        .overlay {
+        .overlay1 {
           position: absolute;
           top: 0;
           left: 0;
           width: 100%;
           height: 100%;
-          background: url("../images/loading1.gif") no-repeat center center;
+          background: url("../images/ESRI_Globe.png") no-repeat center center
+         
         }
+        .overlay2 {
+          position: absolute;
+          top: 13%;
+          left: 13%;
+          width: 75%;
+          height: 75%;
+          background:  url("../images/GEE_logo_transparent.png") no-repeat center center;
+          z-index:2;
+        }
+       #spinner .fa-spin {height:35%!important;width:35%!important;}
+       #spinner{position:absolute;left:25%!important;top:25%!important;}
