@@ -171,7 +171,7 @@
           title:name,
           opacity:0.4,
           popupTemplate: popupTemplate,
-          copyright:'Google Earth Engine | USDA Forest Service',
+          copyright:'Google Earth Engine',
           renderer: renderer //optional
         });
           map.layers.add(geojsonLayer);
@@ -207,7 +207,7 @@
                           title:name,
                           visible: visible,
                           opacity: actualOpacity ,
-                          copyright:'Google Earth Engine | USDA Forest Service' 
+                          copyright:'Google Earth Engine' 
                           });
           // Create a Basemap with the WebTileLayer. The thumbnailUrl will be used for
           // the image in the BasemapToggle widget.
