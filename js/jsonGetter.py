@@ -28,9 +28,9 @@ def getZP(f,pop_field_ending,sample_field_ending):
 
 	z = (sampleMean.subtract(popMean)).divide(se)
 	p = zToP2(z)
-	# f = f.set({'mean_temperature'+sample_field_ending:sampleMean.format('%.2f'),'mean_temperature'+pop_field_ending :popMean.format('%.2f')})
-	f = f.set({'se_temperature'+ pop_field_ending:sePop.format('%.4f'),'se_temperature'+ sample_field_ending:seSample.format('%.4f')})
-	return f.set({'se_temperature'+pop_field_ending+ sample_field_ending:se.format('%.4f'),'zscore_temperature'+pop_field_ending+ sample_field_ending: z.format('%.4f'),'pzscore_temperature'+pop_field_ending+sample_field_ending:p.format('%.20f')})
+	f = f.set({'mean_temperature'+sample_field_ending:ee.Number.parse(sampleMean.format('%.4f')),'mean_temperature'+pop_field_ending :ee.Number.parse(popMean.format('%.4f'))})
+	f = f.set({'se_temperature'+ pop_field_ending:ee.Number.parse(sePop.format('%.4f')),'se_temperature'+ sample_field_ending:ee.Number.parse(seSample.format('%.4f'))})
+	return f.set({'se_temperature'+pop_field_ending+ sample_field_ending:ee.Number.parse(se.format('%.4f')),'zscore_temperature'+pop_field_ending+ sample_field_ending: ee.Number.parse(z.format('%.4f')),'pzscore_temperature'+pop_field_ending+sample_field_ending:ee.Number.parse(p.format('%.20f'))})
 	# print(p.getInfo(),zToP(1.96),zToP2(1.96).getInfo())
 	# print(se.getInfo(),z.getInfo(),p,zToP(1.96),zToP(-1.96))
 def fixer(f):
@@ -38,9 +38,9 @@ def fixer(f):
 	nc = ee.Number(f.get('nonCanopy_count'))
 	nl = ee.Number(f.get('nullCanopy_count'))
 	total = c.add(nc).add(nl)
-	cPct = c.divide(total).multiply(100).format('%.2f')
-	ncPct = nc.divide(total).multiply(100).format('%.2f')
-	nlPct = nl.divide(total).multiply(100).format('%.2f')
+	cPct = ee.Number.parse(c.divide(total).multiply(100).format('%.2f'))
+	ncPct = ee.Number.parse(nc.divide(total).multiply(100).format('%.2f'))
+	nlPct = ee.Number.parse(nl.divide(total).multiply(100).format('%.2f'))
 	f = f.set({'canopy_total':total,\
 	'canopy_pct':cPct,\
 	'nonCanopy_pct':ncPct,\
